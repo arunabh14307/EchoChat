@@ -8,8 +8,11 @@ import { useAuthStore } from '@store/authStore';
  * - Request interceptor: attaches Bearer access token
  * - Response interceptor: silent token refresh on 401
  */
+const isProduction = import.meta.env.PROD;
+const defaultApiUrl = isProduction ? '/api' : 'http://localhost:5000/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || defaultApiUrl,
   withCredentials: true, // send httpOnly refresh token cookie
   headers: {
     'Content-Type': 'application/json',
@@ -67,7 +70,7 @@ api.interceptors.response.use(
 
       try {
         const { data } = await axios.post(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/refresh`,
+          `${import.meta.env.VITE_API_URL || defaultApiUrl}/auth/refresh`,
           {},
           { withCredentials: true }
         );

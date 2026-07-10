@@ -3,8 +3,10 @@
  */
 
 // ── API ───────────────────────────────────────────────────────
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+const isProduction = import.meta.env.PROD;
+export const API_URL = import.meta.env.VITE_API_URL || (isProduction ? '/api' : 'http://localhost:5000/api');
+export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (isProduction ? (typeof window !== 'undefined' ? window.location.origin : '') : 'http://localhost:5000');
+
 
 // ── Pagination ────────────────────────────────────────────────
 export const MESSAGES_PER_PAGE = 40;
