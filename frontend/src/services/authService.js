@@ -1,3 +1,4 @@
+import axios from 'axios';
 import api from './api';
 
 /**
@@ -27,7 +28,11 @@ const authService = {
    * Called automatically by the Axios interceptor.
    */
   refreshToken: async () => {
-    const response = await api.post('/auth/refresh');
+    // Use plain axios (NOT the `api` instance) to bypass the response interceptor.
+    // The interceptor retries 401s by calling refresh — using `api` here would
+    // create an infinite loop when there is no valid session cookie.
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const response = await axios.post(`${baseUrl}/auth/refresh`, {}, { withCredentials: true });
     return response.data;
   },
 

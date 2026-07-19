@@ -54,10 +54,12 @@ const createApp = (io) => {
   }
 
   // ── Inject socket.io for controller access ─────────────────
-  app.use((req, _res, next) => {
-    req.io = io;
-    next();
-  });
+  if (io) {
+    app.use((req, _res, next) => {
+      req.io = io;
+      next();
+    });
+  }
 
   // ── Global rate limiter ────────────────────────────────────
   app.use('/api', apiLimiter);
