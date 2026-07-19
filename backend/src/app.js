@@ -34,9 +34,24 @@ const createApp = (io) => {
   );
 
   // ── CORS ───────────────────────────────────────────────────
+  // Allowed origins: configured CLIENT_URL + localhost dev + any *.vercel.app
+  const allowedOrigins = [
+    env.clientUrl,                  // e.g. https://your-app.vercel.app (set in env)
+    'http://localhost:5173',        // Vite dev server
+    'http://localhost:3000',        // CRA fallback
+  ].filter(Boolean);
+
   app.use(
     cors({
-      origin: env.clientUrl,
+      origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, Postman, curl)
+        if (!origin) return callback(null, true);
+        // Allow any *.vercel.app domain (covers preview deploys too)
+        if (origin.endsWith('.vercel.app')) return callback(null, true);
+        // Allow explicitly configured origins
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error(`CORS: Origin '${origin}' not allowed`));
+      },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
