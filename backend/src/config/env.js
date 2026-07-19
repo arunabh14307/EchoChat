@@ -14,8 +14,9 @@ const required = [
 const missing = required.filter((key) => !process.env[key]);
 
 if (missing.length > 0) {
-  console.error(`[ENV] Missing required environment variables: ${missing.join(', ')}`);
-  process.exit(1);
+  const msg = `[ENV] Missing required environment variables: ${missing.join(', ')}`;
+  console.error(msg);
+  throw new Error(msg); // throw instead of process.exit — works on serverless
 }
 
 export const env = {
